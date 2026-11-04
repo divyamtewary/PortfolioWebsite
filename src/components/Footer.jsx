@@ -24,12 +24,18 @@ export function Footer() {
       <div className="container">
         <div className="footer-top">
           <p className="footer-lead">
-            The fastest way to follow the work is on GitHub, where every repository keeps its own README and
-            tuning notes.
+            Everything I publish lives on GitHub. Each repo has its own README, and the messy notes are usually in
+            there too.
           </p>
-          <a className="btn btn-solid" href={profile.github} target="_blank" rel="noreferrer">
-            github.com/divyamtewary <span aria-hidden="true">↗</span>
-          </a>
+          <div className="footer-actions">
+            <a className="btn btn-solid" href={profile.github} target="_blank" rel="noreferrer">
+              Find me on GitHub <span aria-hidden="true">↗</span>
+            </a>
+            <a className="btn btn-outline" href={profile.telegramUrl} target="_blank" rel="noreferrer">
+              Message me on Telegram <span aria-hidden="true">↗</span>
+            </a>
+            <p className="footer-handle">Telegram: {profile.telegram}</p>
+          </div>
         </div>
 
         <SplitText as="p" text={profile.name} className="footer-name" />
@@ -48,7 +54,7 @@ export function Footer() {
           </nav>
           <div className="footer-meta">
             <a href="#top">Back to top</a>
-            <p>Built with React and GSAP.</p>
+            <p>Made with React and GSAP.</p>
           </div>
         </div>
       </div>

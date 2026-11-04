@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
-import { prefersReducedMotion } from '../lib/motion'
 import { projects } from '../data/projects'
+import { prefersReducedMotion } from '../lib/motion'
 
 // Horizontal carousel of the four repositories. Native scroll-snap gives
 // swipe and trackpad drag on every device; arrows and dots drive the same track.
@@ -41,7 +41,7 @@ export default function RepoCarousel() {
       <div className="container carousel-head">
         <div>
           <h2 id="carousel-title" className="section-title">
-            Four repositories
+            My repositories
           </h2>
           <p className="section-lead">Each one has its own section below. Swipe, drag or use the arrows.</p>
         </div>
@@ -67,13 +67,16 @@ export default function RepoCarousel() {
         </div>
       </div>
 
-      <div className="carousel-track" ref={trackRef} onScroll={handleScroll} role="region" aria-label="Repositories" tabIndex={0}>
+      <div
+        className="carousel-track"
+        ref={trackRef}
+        onScroll={handleScroll}
+        role="region"
+        aria-label="Repositories"
+        tabIndex={0}
+      >
         {projects.map((project) => (
-          <article
-            className="carousel-card"
-            key={project.id}
-            style={{ '--field': project.theme.field, '--ink': project.theme.ink, '--accent': project.theme.accent }}
-          >
+          <article className="carousel-card" key={project.id}>
             <div className="carousel-media">
               <img src={project.image} alt={project.imageAlt} loading="lazy" />
             </div>

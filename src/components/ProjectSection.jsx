@@ -1,24 +1,58 @@
+import { useLayoutEffect, useRef, useState } from 'react'
+import { gsap } from '../lib/gsap'
+import { prefersReducedMotion } from '../lib/motion'
 import { getImage } from '../lib/images'
 import SplitText from './SplitText'
 import TileReveal from './TileReveal'
 import Magnetic from './Magnetic'
+import ItemModal from './ItemModal'
 
-// One repository, one section: full-width banner at its native ratio,
-// a short summary, then an aligned card grid for the items in that repo.
+// Cards use the real 1600×989 ratio of the card images, so nothing is cropped.
+const CARD_RATIO = '1600 / 989'
+
 export default function ProjectSection({ project }) {
   const { id, title, headline, question, repoUrl, language, image, imageAlt, theme, summary, items } = project
+  const sectionRef = useRef(null)
+  const glowRef = useRef(null)
+  const [openIndex, setOpenIndex] = useState(null)
+
+  // The glow drifts slowly against the scroll, so colour bleeds into the next section.
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return undefined
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        glowRef.current,
+        { opacity: 0.35, y: 140 },
+        {
+          opacity: 1,
+          y: -140,
+          ease: 'none',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top bottom', end: 'bottom top', scrub: true },
+        },
+      )
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [])
+
   const style = {
     '--field': theme.field,
     '--ink': theme.ink,
     '--accent': theme.accent,
+    '--glow': theme.glow,
   }
 
+  const openItem = openIndex === null ? null : items[openIndex]
+  const modalItem = openItem
+    ? { ...openItem, src: getImage(openItem.image) }
+    : null
+
   return (
-    <section id={id} className="project" style={style} aria-labelledby={`${id}-title`}>
+    <section id={id} className="project" style={style} ref={sectionRef} aria-labelledby={`${id}-title`}>
+      <div className="project-glow" ref={glowRef} aria-hidden="true" />
       <div className="container">
         <header className="project-head">
           <p className="project-meta">
-            Public repository{language ? ` · ${language}` : ''} · {title}
+            Repository{language ? ` · ${language}` : ''} · {title}
           </p>
           <SplitText as="h2" id={`${id}-title`} text={headline} className="project-title" />
           <p className="project-question">{question}</p>
@@ -37,39 +71,42 @@ export default function ProjectSection({ project }) {
           <div className="project-actions" data-reveal>
             <Magnetic>
               <a className="btn btn-solid" href={repoUrl} target="_blank" rel="noreferrer">
-                View repository <span aria-hidden="true">↗</span>
+                View on GitHub <span aria-hidden="true">↗</span>
               </a>
             </Magnetic>
           </div>
         </div>
 
-        <ul className="repo-cards" aria-label={`${title} items`}>
-          {items.map((item) => {
-            const thumb = getImage(item.image)
+        <ul className="item-grid" aria-label={`${title} projects`}>
+          {items.map((item, index) => {
+            const src = getImage(item.image)
             return (
-              <li className="repo-card" key={item.name} data-reveal>
-                {thumb ? (
-                  <div className="repo-card-media">
-                    <img src={thumb} alt={`${item.name} preview`} loading="lazy" />
-                  </div>
-                ) : null}
-                <div className="repo-card-body">
-                  <div className="repo-card-top">
-                    <h3>{item.name}</h3>
+              <li className="item-card" key={item.name} data-reveal>
+                <button
+                  type="button"
+                  className="item-trigger"
+                  aria-haspopup="dialog"
+                  onClick={() => setOpenIndex(index)}
+                >
+                  <span className="item-media" style={{ aspectRatio: CARD_RATIO }}>
+                    {src ? (
+                      <img src={src} alt="" loading="lazy" />
+                    ) : (
+                      <span className="item-placeholder">{item.name}</span>
+                    )}
+                  </span>
+                  <span className="item-meta">
+                    <span className="item-name">{item.name}</span>
                     <span className={`status status--${item.status.toLowerCase()}`}>{item.status}</span>
-                  </div>
-                  <p>{item.description}</p>
-                  {item.url ? (
-                    <a className="text-link" href={item.url} target="_blank" rel="noreferrer">
-                      Open project <span aria-hidden="true">↗</span>
-                    </a>
-                  ) : null}
-                </div>
+                  </span>
+                </button>
               </li>
             )
           })}
         </ul>
       </div>
+
+      <ItemModal item={modalItem} onClose={() => setOpenIndex(null)} />
     </section>
   )
 }

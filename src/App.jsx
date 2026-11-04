@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect } from 'react'
 import { gsap, ScrollTrigger } from './lib/gsap'
 import { prefersReducedMotion } from './lib/motion'
 import { projects } from './data/projects'
-import CursorFollower from './components/CursorFollower'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import RepoCarousel from './components/RepoCarousel'
@@ -10,6 +9,7 @@ import ProjectSection from './components/ProjectSection'
 import Journey from './components/Journey'
 import Preloader from './components/Preloader'
 import { Marquee, Footer } from './components/Footer'
+import { useCallback, useEffect, useState } from 'react'
 
 const PRELOAD_KEY = 'dt-preloaded'
 
@@ -66,7 +66,6 @@ export default function App() {
   return (
     <>
       {!loaded ? <Preloader onComplete={handleLoaded} /> : null}
-      <CursorFollower />
       <Header />
       <main id="main">
         <Hero ready={loaded} />

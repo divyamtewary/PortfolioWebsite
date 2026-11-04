@@ -59,7 +59,7 @@ export default function Hero({ ready = true }) {
           <div className="hero-actions hero-rise">
             <Magnetic>
               <a className="btn btn-solid" href="#carousel">
-                See the four repositories
+                See my projects
               </a>
             </Magnetic>
             <Magnetic>
@@ -71,19 +71,19 @@ export default function Hero({ ready = true }) {
 
           <dl className="hero-stats hero-rise">
             <div>
-              <dt>Public repositories</dt>
+              <dt>Public repos</dt>
               <dd>
                 <Counter to={4} />
               </dd>
             </div>
             <div>
-              <dt>Available projects</dt>
+              <dt>Live projects</dt>
               <dd>
                 <Counter to={3} />
               </dd>
             </div>
             <div>
-              <dt>Planned projects</dt>
+              <dt>In progress</dt>
               <dd>
                 <Counter to={2} />
               </dd>

@@ -4,6 +4,7 @@
   --ink: #f1ebe2;
   --field: #0c0c0b;
   --accent: #f1ebe2;
+  --glow: #2a2a27;
   --display: 'Instrument Serif', Georgia, serif;
   --text: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --gutter: clamp(20px, 4vw, 56px);
@@ -20,6 +21,7 @@
 }
 
 html {
+  color-scheme: dark;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
@@ -44,6 +46,10 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+main {
+  overflow-x: clip;
 }
 
 h1,
@@ -75,13 +81,13 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--paper);
   outline-offset: 4px;
 }
 
 ::selection {
   background: var(--accent);
-  color: var(--field);
+  color: var(--ground);
 }
 
 .sr-only {
@@ -276,18 +282,19 @@ button {
 }
 
 .btn-solid {
-  background: var(--accent);
-  color: var(--field);
+  background: var(--paper);
+  color: var(--ground);
 }
 
 .btn-solid:hover {
-  background: var(--paper);
-  color: var(--ground);
+  background: #ffffff;
 }
 
 .btn-ghost {
   background: rgba(255, 255, 255, 0.08);
   color: var(--paper);
+  border: 0;
+  cursor: pointer;
 }
 
 .btn-ghost:hover {
@@ -306,14 +313,9 @@ button {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
-  transition: opacity 0.3s var(--ease-out);
 }
 
-.text-link:hover {
-  opacity: 0.7;
-}
-
-/* Tile reveal: a grid of colour tiles that clears on scroll */
+/* Tile reveal: colour tiles clear as the element scrolls in */
 
 .tile-reveal {
   position: relative;
@@ -329,8 +331,8 @@ button {
 }
 
 .tile {
-  background: var(--field);
-  outline: 1px solid var(--field);
+  background: var(--ground);
+  outline: 1px solid var(--ground);
   transform-origin: center;
 }
 
@@ -575,13 +577,27 @@ button {
   background: var(--paper);
 }
 
-/* Project sections */
+/* Project sections: dark ground with a soft glow in the section's colour */
 
 .project {
-  background: var(--field);
+  position: relative;
   color: var(--ink);
   padding: var(--section-gap) 0;
   scroll-margin-top: var(--header-h);
+}
+
+.project-glow {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  top: -30%;
+  bottom: -30%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(closest-side at 22% 45%, color-mix(in srgb, var(--glow) 60%, transparent), transparent),
+    radial-gradient(closest-side at 82% 62%, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+  filter: blur(28px);
 }
 
 .project-meta {
@@ -630,55 +646,74 @@ button {
   justify-self: end;
 }
 
-.repo-cards {
+/* Project cards that open in a modal */
+
+.item-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 16px;
 }
 
-.repo-card {
+.item-card {
+  display: flex;
+}
+
+.item-trigger {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: rgba(255, 255, 255, 0.06);
-  transition: background-color 0.4s var(--ease-out);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.4s var(--ease-out), transform 0.4s var(--ease-out);
 }
 
-.repo-card:hover {
+.item-trigger:hover {
   background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-3px);
 }
 
-.repo-card-media img {
+.item-media {
+  display: block;
   width: 100%;
-  height: auto;
+  overflow: hidden;
+  background: var(--ground);
 }
 
-.repo-card-body {
+.item-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.item-placeholder {
   display: grid;
-  gap: 10px;
-  align-content: start;
-  padding: 24px;
-  flex: 1;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  font-family: var(--display);
+  font-size: 28px;
+  text-align: center;
+  opacity: 0.8;
 }
 
-.repo-card-top {
+.item-meta {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 12px;
+  padding: 18px 20px 20px;
   flex-wrap: wrap;
 }
 
-.repo-card h3 {
-  font-size: 22px;
+.item-name {
+  font-size: 18px;
   font-weight: 500;
-  line-height: 1.2;
   overflow-wrap: anywhere;
-}
-
-.repo-card p {
-  font-size: 16px;
-  line-height: 1.6;
-  opacity: 0.88;
 }
 
 .status {
@@ -691,10 +726,102 @@ button {
   opacity: 0.55;
 }
 
-/* Journey */
+.item-modal {
+  width: min(980px, 92vw);
+  max-height: 90vh;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--ground);
+  color: var(--paper);
+  overflow: auto;
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a36 var(--ground);
+}
+
+.item-modal::-webkit-scrollbar {
+  width: 10px;
+}
+
+.item-modal::-webkit-scrollbar-track {
+  background: var(--ground);
+}
+
+.item-modal::-webkit-scrollbar-thumb {
+  background: #3a3a36;
+  border: 2px solid var(--ground);
+}
+
+.item-modal::-webkit-scrollbar-thumb:hover {
+  background: #4d4d48;
+}
+
+.item-modal::backdrop {
+  background: rgba(6, 6, 5, 0.82);
+}
+
+.item-modal[open] {
+  animation: modal-in 0.45s var(--ease-out);
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.item-modal-inner {
+  display: grid;
+}
+
+.item-media--modal {
+  aspect-ratio: 1600 / 989;
+}
+
+.item-modal-body {
+  display: grid;
+  gap: 16px;
+  padding: clamp(24px, 3vw, 36px);
+}
+
+.item-modal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.item-modal-top h3 {
+  font-family: var(--display);
+  font-size: clamp(30px, 3.4vw, 42px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.item-modal-body p {
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 60ch;
+  opacity: 0.9;
+}
+
+.item-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Where I've been */
 
 .journey {
-  background: var(--ground);
+  position: relative;
   color: var(--paper);
   padding: var(--section-gap) 0;
   scroll-margin-top: var(--header-h);
@@ -707,11 +834,23 @@ button {
   align-items: start;
 }
 
-.journey-aside {
+.journey-portrait {
+  width: 100%;
+  max-width: 520px;
   position: sticky;
-  top: calc(var(--header-h) + 40px);
+  top: calc(var(--header-h) + 32px);
+}
+
+.journey-portrait img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 815 / 1191;
+  object-fit: cover;
+}
+
+.journey-main {
   display: grid;
-  gap: 28px;
+  gap: 32px;
 }
 
 .journey-title {
@@ -721,22 +860,38 @@ button {
 .journey-lead {
   font-size: 20px;
   line-height: 1.5;
-  max-width: 32ch;
+  max-width: 34ch;
   opacity: 0.9;
 }
 
-.journey-portrait {
-  width: 100%;
-  max-width: 420px;
+.timeline {
+  display: grid;
+  gap: 2px;
 }
 
-.journey-portrait img {
-  width: 100%;
-  height: auto;
+.timeline-step {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 24px;
+  align-items: baseline;
+  padding: 22px 24px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.timeline-year {
+  font-family: var(--display);
+  font-size: clamp(28px, 2.6vw, 38px);
+  line-height: 1;
+}
+
+.timeline-step p {
+  font-size: 17px;
+  line-height: 1.6;
+  opacity: 0.92;
 }
 
 .offtrack {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
   padding: 24px;
   display: grid;
   gap: 10px;
@@ -749,43 +904,6 @@ button {
 
 .offtrack p {
   font-size: 16px;
-  line-height: 1.6;
-  opacity: 0.88;
-}
-
-.timeline {
-  display: grid;
-  gap: 4px;
-}
-
-.timeline-step {
-  display: grid;
-  grid-template-columns: 170px minmax(0, 1fr);
-  gap: 28px;
-  padding: 32px;
-  background: rgba(255, 255, 255, 0.05);
-  transition: background-color 0.4s var(--ease-out);
-}
-
-.timeline-step:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.timeline-when {
-  font-family: var(--display);
-  font-size: clamp(28px, 2.6vw, 38px);
-  line-height: 1.05;
-}
-
-.timeline-step h3 {
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.25;
-  margin-bottom: 10px;
-}
-
-.timeline-step p {
-  font-size: 17px;
   line-height: 1.6;
   opacity: 0.9;
 }
@@ -813,6 +931,13 @@ button {
   max-width: 36ch;
 }
 
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .footer .btn-solid {
   background: var(--ground);
   color: var(--paper);
@@ -820,7 +945,23 @@ button {
 
 .footer .btn-solid:hover {
   background: #2a2a27;
+}
+
+.footer .btn-outline {
+  background: transparent;
+  color: var(--ground);
+  box-shadow: inset 0 0 0 2px var(--ground);
+}
+
+.footer .btn-outline:hover {
+  background: var(--ground);
   color: var(--paper);
+}
+
+.footer-handle {
+  width: 100%;
+  font-size: 16px;
+  opacity: 0.75;
 }
 
 .footer-name {
@@ -847,7 +988,6 @@ button {
 
 .footer-bottom a {
   text-decoration: none;
-  transition: opacity 0.3s var(--ease-out);
 }
 
 .footer-bottom a:hover {
@@ -861,39 +1001,7 @@ button {
   opacity: 0.8;
 }
 
-/* Custom cursor, fine pointers only */
-
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border-radius: 50%;
-  background: var(--paper);
-  pointer-events: none;
-  z-index: 100;
-  mix-blend-mode: difference;
-  transition:
-    width 0.35s var(--ease-out),
-    height 0.35s var(--ease-out),
-    margin 0.35s var(--ease-out);
-}
-
-.cursor.is-hover {
-  width: 56px;
-  height: 56px;
-  margin: -28px 0 0 -28px;
-}
-
-.has-cursor,
-.has-cursor a,
-.has-cursor button {
-  cursor: none;
-}
-
-/* Tablet and below: collapse the header into a menu, stack the grids. */
+/* Tablet and below */
 
 @media (max-width: 960px) {
   .menu-toggle {
@@ -924,10 +1032,6 @@ button {
     font-size: clamp(40px, 9vw, 64px);
     line-height: 1.15;
     opacity: 1;
-  }
-
-  .site-nav a.is-active {
-    text-decoration-thickness: 3px;
   }
 
   .nav-github {
@@ -963,13 +1067,9 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .journey-aside {
+  .journey-portrait {
     position: static;
-  }
-
-  .timeline-step {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    max-width: 420px;
   }
 }
 
@@ -1011,6 +1111,11 @@ button {
     font-size: 44px;
   }
 
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+  }
+
   .carousel-card {
     flex-basis: 84vw;
   }
@@ -1023,11 +1128,6 @@ button {
     align-items: start;
   }
 
-  .icon-btn {
-    width: 48px;
-    height: 48px;
-  }
-
   .project-title {
     font-size: clamp(44px, 13vw, 64px);
   }
@@ -1036,32 +1136,14 @@ button {
     font-size: 20px;
   }
 
-  .repo-card-body {
-    padding: 20px;
-  }
-
   .timeline-step {
-    padding: 24px;
-  }
-
-  .timeline-step h3 {
-    font-size: 21px;
-  }
-
-  .timeline-step p {
-    font-size: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 20px;
   }
 
   .footer-meta {
     text-align: left;
-  }
-
-  .header-github {
-    display: none;
-  }
-
-  .preloader-count {
-    bottom: 20px;
   }
 }
 
@@ -1081,6 +1163,10 @@ button {
   }
 
   .marquee-track {
+    animation: none;
+  }
+
+  .item-modal[open] {
     animation: none;
   }
 }

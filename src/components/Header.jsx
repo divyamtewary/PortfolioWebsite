@@ -4,7 +4,7 @@ import { projects, profile } from '../data/projects'
 
 const sections = [
   ...projects.map((project) => ({ id: project.id, label: project.title })),
-  { id: 'journey', label: 'Journey' },
+  { id: 'timeline', label: 'Timeline' },
 ]
 
 // Fixed top bar: wordmark, section links, GitHub, a menu on small screens, and a scroll progress line.
@@ -83,7 +83,7 @@ export default function Header() {
             </a>
           ))}
           <a href="#contact" onClick={closeMenu}>
-            Contact
+            Say hi
           </a>
           <a className="nav-github" href={profile.github} target="_blank" rel="noreferrer">
             GitHub <span aria-hidden="true">↗</span>
